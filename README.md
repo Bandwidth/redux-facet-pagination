@@ -49,7 +49,7 @@ A component enhanced using `withPagination()` will receive the following props:
 * `currentPage`
   * The page number of the currently displayed page
 * `pageSize`
-  * The size of a page.
+  * The size of a page. You can specify pageSize as a prop to your container, which will seed this value.
 * `setPage(page: Number, pageSize: Number)`
   * Action creator function which is already bound to this facet.
   * Call it to set the current page and/or change the page size.
@@ -65,6 +65,14 @@ A component enhanced using `withPagination()` will receive the following props:
 #### Options
 
 The only parameter for `withPagination()` is `options`. You can pass any options you'd normally pass to `react-redux`'s `connect` function to this map.
+
+#### Setting the Page Size
+
+`redux-facet-pagination` defaults to a page size of `10`. To initialize, a container enhanced with `redux-facet-pagination` will dispatch a `setPage` action on mount with the current page properties (so if the component was mounted with `currentPage=2` and `pageSize=3`, an action will be dispatched which sets those values in the store).
+
+To set the page size, you can provide the `pageSize` prop to your container. When the container dispatches the initializing action, it will utilize your provided value. Consider using `recompose`'s `withProps` helper within your container definition if you don't need the page size to change.
+
+You can also change the page size at any time by providing it as a second parameter to `setPage`. This can enable patterns where the user is allowed to customize the number of items they want to see on the screen.
 
 ### `paginationReducer`
 

@@ -48,7 +48,7 @@ export default selectors => (options) => {
     ),
     lifecycle({
       componentDidMount() {
-        this.props.setPage(this.props.currentPage);
+        this.props.setPage(this.props.currentPage, this.props.pageSize || 10);
       },
     }),
   );

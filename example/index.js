@@ -26,8 +26,8 @@ ReactDom.render(
           height: '100%',
         }}
       >
-        <CatsList pageSize={2} />
-        <DogsList pageSize={3} />
+        <CatsList name="Cats" pageSize={2} />
+        <DogsList name="Dogs" pageSize={3} />
       </div>
     </div>
   </Provider>,
