@@ -12,23 +12,46 @@ To use `redux-facet-pagination` with `immutable`, import all modules from `@band
 
 ## Documentation
 
-### Default export: `withPagination(options)`
+### Default export: `withPaginatedData(selectItems: Function|String, options: Object)`
 
 A higher-order-component which enhances a `facet` container with:
 
-1. Access to pagination information (current page, page size)
-2. A set of action creator props which allow page navigation
+1. Access to a paginated slice of provided data
+2. Access to pagination information (current page, page size)
+3. A set of action creator props which allow page navigation
 
-#### Using `withPagination()`
+The first parameter of `withPaginatedData` is required. If you provide a function, this function must be a selector function which will retrieve your items list from the Redux state. If you provide a string, this string must be a prop name. The container will assume that this prop is provided with your items list and will paginate the data accordingly.
 
-Compose `withPagination()` after `facet()` before passing in your component:
+The last parameter for `withPaginatedData()` is `options`:
+
+```js
+{
+  dataPropName: String = 'filteredData',
+  connect: Function = connect, /* from react-redux */
+  ...connectOptions /* any options you would normally pass to react-redux connect */
+}
+```
+
+You can pass any options you'd normally pass to `react-redux`'s `connect` function to this map.
+
+#### Using `withPaginatedData()`
+
+Compose `withPaginatedData()` after `facet()` before passing in your component:
 
 ```javascript
+// selector function version
 facet('users', mapStateToProps, mapDispatchToProps)(
-  withPagination()(
+  withPaginatedData(selectUsers)( // selecting our own data list from the store
     ViewComponent
   ),
 );
+
+// prop name version
+facet('users', mapStateToProps, mapDispatchToProps)(
+  withPaginatedData('users')( // assuming that mapStateToProps above provides the `users` prop
+    ViewComponent
+  )
+)
 ```
 
 To make things more idiomatic, it's recommented to use [`recompose`](https://github.com/acdlite/recompose):
@@ -36,35 +59,35 @@ To make things more idiomatic, it's recommented to use [`recompose`](https://git
 ```javascript
 compose(
   facet('users', mapStateToProps, mapDispatchToProps),
-  withPagination(),
+  withPaginatedData(selectUsers),
 )(ViewComponent);
 ```
 
-Remember, `withPagination()` must come *after* `facet()`.
+Remember, `withPaginatedData()` must come *after* `facet()`.
 
 #### Properties provided
 
-A component enhanced using `withPagination()` will receive the following props:
+A component enhanced using `withPaginatedData()` will receive the following props:
 
+* `paginatedData | [dataPropName]`
+  * The paginated dataset will be supplied to a prop name you can define yourself via `options`. By default, this prop will be `paginatedData`.
 * `currentPage`
   * The page number of the currently displayed page
 * `pageSize`
   * The size of a page. You can specify pageSize as a prop to your container, which will seed this value.
+* `pageCount`
+  * The total number of pages, based on the length of the raw data array.
 * `setPage(page: Number, pageSize: Number)`
   * Action creator function which is already bound to this facet.
   * Call it to set the current page and/or change the page size.
 * `nextPage()`
   * Action creator function which is already bound to this facet.
   * Call it to advance to the next page.
-  * If `pageCount` is provided to your component as a prop, this will not advance past the last page.
+  * This will not advance past the last page according to `pageCount`.
 * `previousPage()`
   * Action creator function which is already bound to this facet.
   * Call it to go back one page.
   * This will not go below page 0.
-
-#### Options
-
-The only parameter for `withPagination()` is `options`. You can pass any options you'd normally pass to `react-redux`'s `connect` function to this map.
 
 #### Setting the Page Size
 
@@ -73,6 +96,14 @@ The only parameter for `withPagination()` is `options`. You can pass any options
 To set the page size, you can provide the `pageSize` prop to your container. When the container dispatches the initializing action, it will utilize your provided value. Consider using `recompose`'s `withProps` helper within your container definition if you don't need the page size to change.
 
 You can also change the page size at any time by providing it as a second parameter to `setPage`. This can enable patterns where the user is allowed to customize the number of items they want to see on the screen.
+
+### `withPagination(selectItems)`
+
+A lighter-weight higher-order-component that just provides pagination data, but does not compute a paginated list. `withPagination` will provide `currentPage`, `pageSize`, `pageCount`, `setPage`, `nextPage`, and `previousPage`.
+
+`selectItems` has the same usage as `withPaginatedData`. It's required to calculate the total page count.
+
+This smaller container may be useful if you want to implement your pagination controls as a separate container from your data view.
 
 ### `paginationReducer`
 

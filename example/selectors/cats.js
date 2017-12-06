@@ -1,5 +1,3 @@
-import { createPaginationSelectors } from '../../src/immutable';
-
-const itemsSelector = state => state.get('cats').toJS();
-
-export default createPaginationSelectors(itemsSelector);
+export default {
+  selectCats: state => state.get('cats').toJS(),
+};
