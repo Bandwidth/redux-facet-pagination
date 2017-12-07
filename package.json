@@ -1,6 +1,6 @@
 {
   "name": "@bandwidth/redux-facet-pagination",
-  "version": "0.3.1",
+  "version": "1.0.0",
   "description": "Pagination behaviors for redux-facet",
   "main": "./dist/index.js",
   "files": [
