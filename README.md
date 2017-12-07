@@ -27,12 +27,10 @@ The last parameter for `withPaginatedData()` is `options`:
 ```js
 {
   dataPropName: String = 'filteredData',
-  connect: Function = connect, /* from react-redux */
-  ...connectOptions /* any options you would normally pass to react-redux connect */
 }
 ```
 
-You can pass any options you'd normally pass to `react-redux`'s `connect` function to this map.
+`dataPropName` will let you change the prop name of the paginated data when it's provided to your wrapped component.
 
 #### Using `withPaginatedData()`
 
@@ -40,15 +38,15 @@ Compose `withPaginatedData()` after `facet()` before passing in your component:
 
 ```javascript
 // selector function version
-facet('users', mapStateToProps, mapDispatchToProps)(
+facet('users')(
   withPaginatedData(selectUsers)( // selecting our own data list from the store
     ViewComponent
   ),
 );
 
 // prop name version
-facet('users', mapStateToProps, mapDispatchToProps)(
-  withPaginatedData('users')( // assuming that mapStateToProps above provides the `users` prop
+facet('users')(
+  withPaginatedData('users')( // assuming that the container is provided with a `users` prop
     ViewComponent
   )
 )
@@ -58,7 +56,7 @@ To make things more idiomatic, it's recommented to use [`recompose`](https://git
 
 ```javascript
 compose(
-  facet('users', mapStateToProps, mapDispatchToProps),
+  facet('users'),
   withPaginatedData(selectUsers),
 )(ViewComponent);
 ```
